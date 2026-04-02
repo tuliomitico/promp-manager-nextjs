@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "format": "prettier --write",
-    "typecheck": "tsx --noEmit --skipLibCheck",
+    "typecheck": "tsc --noEmit --skipLibCheck",
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
