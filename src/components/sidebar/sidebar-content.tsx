@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
+import { Input } from '../ui/input';
 
 type Prompt = {
   id: string;
@@ -85,6 +86,16 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                 </Button>
               </header>
             </div>
+            <section className="mb-5">
+              <form action="">
+                <Input
+                  name="q"
+                  type="text"
+                  placeholder="Buscar prompts..."
+                  autoFocus
+                />
+              </form>
+            </section>
             <div>
               <Button onClick={handleNewPrompt} className="w-full" size="lg">
                 <AddIcon className="size-5 mr-2" />
