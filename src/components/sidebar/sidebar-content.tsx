@@ -12,7 +12,17 @@ import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { Logo } from '../logo';
 
-export function SidebarContent() {
+type Prompt = {
+  id: string;
+  title: string;
+  content: string;
+};
+
+export type SidebarContentProps = {
+  prompts: Prompt[];
+};
+
+export function SidebarContent({ prompts }: SidebarContentProps) {
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -84,6 +94,9 @@ export function SidebarContent() {
           </section>
         </>
       )}
+      {prompts.map((prompt) => (
+        <p key={prompt.id}>{prompt.title}</p>
+      ))}
     </aside>
   );
 }
