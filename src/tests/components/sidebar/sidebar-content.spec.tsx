@@ -12,6 +12,7 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock }),
   useSearchParams: () => mockSearchParams,
 }));
+jest.mock('@/lib/prisma', () => ({ prisma: {} }));
 
 const initialPrompts = [
   {
