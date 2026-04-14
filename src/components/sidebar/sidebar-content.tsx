@@ -6,6 +6,7 @@ import {
   useState,
   useRef,
   type ChangeEvent,
+  useEffect,
 } from 'react';
 import {
   ArrowLeftToLine,
@@ -66,6 +67,11 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
       formRef.current?.requestSubmit();
     });
   }
+
+  useEffect(() => {
+    if (!hasQuery) return;
+    formRef.current?.requestSubmit();
+  }, [hasQuery]);
 
   return (
     <aside
