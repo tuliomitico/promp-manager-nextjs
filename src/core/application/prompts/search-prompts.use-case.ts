@@ -1,13 +1,13 @@
 import { PromptRepository } from '@/core/domain/prompts/prompt.repository';
 
 export class SearchPromptsUseCase {
-  constructor(private propmtRepository: PromptRepository) {}
+  constructor(private promptRepository: PromptRepository) {}
 
   async execute(term?: string) {
     const q = term?.trim() ?? '';
 
-    if (!q) return this.propmtRepository.findMany();
+    if (!q) return this.promptRepository.findMany();
 
-    return this.propmtRepository.searchMany(q);
+    return this.promptRepository.searchMany(q);
   }
 }
