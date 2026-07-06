@@ -12,8 +12,12 @@ import {
 } from '@/core/application/prompts/create-prompt.dto';
 
 import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import { createPromptAction } from '@/app/actions/prompt.actions';
+import { useRouter } from 'next/navigation';
 
 export function PromptForm() {
+  const router = useRouter();
+
   const form = useForm<CreatePromptDTO>({
     resolver: zodResolver(createPromptSchema),
     defaultValues: {
@@ -21,9 +25,20 @@ export function PromptForm() {
       content: '',
     },
   });
+
+  const submit = async (data: CreatePromptDTO) => {
+    const result = await createPromptAction(data);
+
+    if (!result.success) {
+      return;
+    }
+
+    router.refresh();
+  };
+
   return (
     <Form {...form}>
-      <form action="" className="space-y-6">
+      <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
         <header className="flex flex-wrap gap-2 items-center mb-6 justify-end">
           <Button type="submit" size="sm">
             Salvar
