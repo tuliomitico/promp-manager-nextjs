@@ -1,8 +1,12 @@
-import { searchPromptAction } from '@/app/actions/prompt.actions';
+import {
+  createPromptAction,
+  searchPromptAction,
+} from '@/app/actions/prompt.actions';
 
 jest.mock('@/lib/prisma', () => ({ prisma: {} }));
 
 const mockedSearchExecute = jest.fn();
+const mockedCreateExecute = jest.fn();
 
 jest.mock('@/core/application/prompts/search-prompts.use-case', () => ({
   SearchPromptsUseCase: jest
@@ -10,9 +14,57 @@ jest.mock('@/core/application/prompts/search-prompts.use-case', () => ({
     .mockImplementation(() => ({ execute: mockedSearchExecute })),
 }));
 
+jest.mock('@/core/application/prompts/create-prompt.use-case', () => ({
+  CreatePromptUseCase: jest
+    .fn()
+    .mockImplementation(() => ({ execute: mockedCreateExecute })),
+}));
+
 describe('Server Actions: Prompts', () => {
   beforeEach(() => {
     mockedSearchExecute.mockReset();
+  });
+
+  describe('createPromptAction', () => {
+    it('deve retornar erro de validação quando os campos forem vazios', async () => {
+      const data = {
+        title: '',
+        content: '',
+      };
+
+      const result = await createPromptAction(data);
+
+      expect(result?.success).toBe(false);
+      expect(result?.message).toBe('Erro de validação');
+      expect(result?.errors).toBeDefined();
+    });
+
+    it('deve retornar erro quando PROMPT_ALREADY_EXISTS acontecer', async () => {
+      mockedCreateExecute.mockRejectedValue(new Error('PROMPT_ALREADY_EXISTS'));
+
+      const data = {
+        title: 'duplicado',
+        content: 'duplicado',
+      };
+
+      const result = await createPromptAction(data);
+
+      expect(result?.success).toBe(false);
+      expect(result?.message).toBe('Este prompt já existe');
+    });
+
+    it('deve criar um prompt com sucesso', async () => {
+      mockedCreateExecute.mockResolvedValue(undefined);
+      const data = {
+        title: 'Title',
+        content: 'Content',
+      };
+
+      const result = await createPromptAction(data);
+
+      expect(result?.success).toBe(true);
+      expect(result?.message).toBe('Prompt criado com sucesso!');
+    });
   });
 
   describe('searchPromptAction', () => {
