@@ -1,8 +1,17 @@
+import { CreatePromptDTO } from '@/core/application/prompts/create-prompt.dto';
 import { Prompt } from '@/core/domain/prompts/prompt.entity';
 import { PrismaClient } from '@/generated/prisma/client';
 import { PrismaPromptRepository } from '@/infra/repository/prisma-prompt.repository';
 
 type PromptDelegateMock = {
+  create: jest.MockedFunction<
+    (args: { data: CreatePromptDTO }) => Promise<void>
+  >;
+  findFirst: jest.MockedFunction<
+    (args: {
+      where: { title: string };
+    }) => Promise<Pick<Prompt, 'id' | 'title' | 'content'> | null>
+  >;
   findMany: jest.MockedFunction<
     (args: {
       orderBy?: { createdAt: 'desc' | 'asc' };
@@ -24,6 +33,8 @@ function createMockPrisma() {
   const mock: PrismaMock = {
     prompt: {
       findMany: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
     },
   };
 
@@ -37,6 +48,40 @@ describe('PrismaPromptRepository', () => {
   beforeEach(() => {
     prisma = createMockPrisma();
     repository = new PrismaPromptRepository(prisma);
+  });
+
+  describe('create', () => {
+    it('deve chamar o metodo create com os dados corretos', async () => {
+      const input = {
+        title: 'title',
+        content: 'content',
+      };
+
+      await repository.create(input);
+
+      expect(prisma.prompt.create).toHaveBeenCalledWith({ data: input });
+    });
+  });
+
+  describe('findByTitle', () => {
+    it('deve chamar corretamente o findFirst com o title', async () => {
+      const title = 'title 01';
+      const input = {
+        id: 'p1',
+        title,
+        content: 'content 01',
+      };
+
+      prisma.prompt.findFirst.mockResolvedValue(input);
+
+      const results = await repository.findByTitle(title);
+
+      expect(prisma.prompt.findFirst).toHaveBeenCalledWith({
+        where: { title },
+      });
+
+      expect(results).toEqual(input);
+    });
   });
 
   describe('findMany', () => {
