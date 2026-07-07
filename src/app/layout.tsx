@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
 import { Sidebar } from '@/components/sidebar';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'Prompt Manager',
@@ -31,6 +32,7 @@ export default function RootLayout({
             {children}
           </div>
         </main>
+        <Toaster position="top-right" />
       </body>
     </html>
   );
