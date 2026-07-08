@@ -21,6 +21,12 @@ describe('SearchPromptsUseCase', () => {
   ];
 
   const repository: PromptRepository = {
+    async create(data) {
+      throw new Error('Method not implemented.');
+    },
+    async findByTitle(title) {
+      throw new Error('Method not implemented.');
+    },
     async findMany(): Promise<Prompt[]> {
       return input;
     },
