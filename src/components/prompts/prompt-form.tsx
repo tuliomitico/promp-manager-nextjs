@@ -11,7 +11,13 @@ import {
   createPromptSchema,
 } from '@/core/application/prompts/create-prompt.dto';
 
-import { Form, FormControl, FormField, FormItem } from '../ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '../ui/form';
 import { createPromptAction } from '@/app/actions/prompt.actions';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -68,6 +74,7 @@ export function PromptForm() {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -84,6 +91,7 @@ export function PromptForm() {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
