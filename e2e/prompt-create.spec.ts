@@ -1,4 +1,7 @@
+import { PrismaClient } from '@/generated/prisma/client';
 import { test, expect, type Page } from '@playwright/test';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 test('Criação de prompt via UI (sucesso)', async ({ page }: { page: Page }) => {
   const uniqueTitle = `E2E Prompt ${Date.now()}`;
@@ -16,17 +19,30 @@ test('Criação de prompt via UI (sucesso)', async ({ page }: { page: Page }) =>
   });
 });
 
-test('deve manter o usuário em /new e mostrar erro de validação ao enviar vazio', async ({
-  page,
-}: {
-  page: Page;
-}) => {
-  await page.goto('/new');
+test('Validação de duplicidadede título', async ({ page }: { page: Page }) => {
+  const duplicateTitle = `E2E Duplicate Prompt`;
+  const content = 'Content';
 
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const adapter = new PrismaPg(pool);
+  const prisma = new PrismaClient({ adapter });
+  await prisma.prompt.deleteMany({ where: { title: duplicateTitle } });
+  await prisma.prompt.create({
+    data: { title: duplicateTitle, content },
+  });
+  await prisma.$disconnect();
+
+  await page.goto('/new');
+  await expect(page.getByPlaceholder('Título do prompt')).toBeVisible();
+  await page.fill('input[name="title"]', duplicateTitle);
+  await page.fill('textarea[name="content"]', content);
   await page.getByRole('button', { name: 'Salvar' }).click();
 
-  await expect(page.getByText('Título é obrigatório')).toBeVisible();
-  await expect(page.getByText('Conteúdo é obrigatório')).toBeVisible();
-
-  await expect(page).toHaveURL(/\/new$/);
+  await page.waitForSelector(`text=Este prompt já existe`, {
+    state: 'visible',
+    timeout: 15000,
+  });
+  await expect(page.getByRole('heading', { name: duplicateTitle })).toHaveCount(
+    1
+  );
 });
