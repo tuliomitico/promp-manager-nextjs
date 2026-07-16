@@ -10,7 +10,6 @@ import {
   CreatePromptDTO,
   createPromptSchema,
 } from '@/core/application/prompts/create-prompt.dto';
-import { updatePromptSchema } from '@/core/application/prompts/update-prompt.dto';
 
 import {
   Form,
@@ -34,13 +33,12 @@ export type PromptFormProps = {
 
 export function PromptForm({ prompt }: PromptFormProps) {
   const router = useRouter();
-  const isEditMode = Boolean(prompt?.id);
 
   const form = useForm<CreatePromptDTO>({
-    resolver: zodResolver(isEditMode ? updatePromptSchema : createPromptSchema),
+    resolver: zodResolver(createPromptSchema),
     defaultValues: {
-      title: prompt?.title,
-      content: prompt?.content,
+      title: prompt?.title || '',
+      content: prompt?.content || '',
     },
   });
 
@@ -48,10 +46,13 @@ export function PromptForm({ prompt }: PromptFormProps) {
     control: form.control,
     name: 'content',
   });
+  const isEdit = !!prompt?.id;
 
   const submit = async (data: CreatePromptDTO) => {
-    const result = isEditMode
-      ? await updatePromptAction({ id: prompt?.id ?? '', ...data })
+    console.log(prompt?.id);
+
+    const result = isEdit
+      ? await updatePromptAction({ id: prompt.id, ...data })
       : await createPromptAction(data);
 
     if (!result.success) {

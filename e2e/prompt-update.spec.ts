@@ -45,10 +45,8 @@ test('Edição de prompt via UI (sucesso)', async ({ page }: { page: Page }) => 
     timeout: 15000,
   });
 
-  await expect(
-    page.getByRole('heading', { name: updatedContent })
-  ).toBeVisible();
-  await expect(page.locator('input[name="title"')).toHaveValue(updatedTitle);
+  await expect(page.getByRole('heading', { name: updatedTitle })).toBeVisible();
+  await expect(page.locator('input[name="title"]')).toHaveValue(updatedTitle);
 });
 
 test('deve atualizar o título e conteúdo de um prompt existente', async ({

@@ -1,5 +1,3 @@
-import { notFound } from 'next/navigation';
-
 import { PromptForm } from '@/components/prompts';
 import { prisma } from '@/lib/prisma';
 import { PrismaPromptRepository } from '@/infra/repository/prisma-prompt.repository';
@@ -13,10 +11,6 @@ export default async function PromptPage({ params }: PromptPageProps) {
 
   const repository = new PrismaPromptRepository(prisma);
   const prompt = await repository.findById(id);
-
-  if (!prompt) {
-    notFound();
-  }
 
   return <PromptForm prompt={prompt} />;
 }

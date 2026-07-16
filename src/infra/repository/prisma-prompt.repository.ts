@@ -1,4 +1,5 @@
 import { CreatePromptDTO } from '@/core/application/prompts/create-prompt.dto';
+import { UpdatePromptDTO } from '@/core/application/prompts/update-prompt.dto';
 import { Prompt } from '@/core/domain/prompts/prompt.entity';
 import { PromptRepository } from '@/core/domain/prompts/prompt.repository';
 import { PrismaClient } from '@/generated/prisma/client';
@@ -56,5 +57,17 @@ export class PrismaPromptRepository implements PromptRepository {
     });
 
     return prompts;
+  }
+
+  async update(id: string, data: Partial<UpdatePromptDTO>): Promise<Prompt> {
+    const updated = await this.prisma.prompt.update({
+      where: { id },
+      data: {
+        ...(data.title !== undefined ? { title: data.title } : {}),
+        ...(data.content !== undefined ? { content: data.content } : {}),
+      },
+    });
+
+    return updated;
   }
 }
