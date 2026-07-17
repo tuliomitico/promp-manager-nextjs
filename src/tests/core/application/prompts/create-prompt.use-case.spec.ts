@@ -6,7 +6,7 @@ const makeRepository = (overrides: Partial<PromptRepository>) => {
     create: jest.fn(async () => undefined),
   };
 
-  return { ...base, ...overrides };
+  return { ...base, ...overrides } as PromptRepository;
 };
 
 describe('CreatePromptUseCase', () => {
