@@ -49,8 +49,6 @@ export function PromptForm({ prompt }: PromptFormProps) {
   const isEdit = !!prompt?.id;
 
   const submit = async (data: CreatePromptDTO) => {
-    console.log(prompt?.id);
-
     const result = isEdit
       ? await updatePromptAction({ id: prompt.id, ...data })
       : await createPromptAction(data);
