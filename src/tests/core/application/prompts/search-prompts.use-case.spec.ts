@@ -21,10 +21,13 @@ describe('SearchPromptsUseCase', () => {
   ];
 
   const repository: PromptRepository = {
-    async create(data) {
+    async create() {
       throw new Error('Method not implemented.');
     },
-    async findByTitle(title) {
+    async findById() {
+      throw new Error('Method not implemented.');
+    },
+    async findByTitle() {
       throw new Error('Method not implemented.');
     },
     async findMany(): Promise<Prompt[]> {
@@ -36,6 +39,9 @@ describe('SearchPromptsUseCase', () => {
           prompt.title.toLowerCase().includes(term.toLowerCase()) ||
           prompt.content.toLowerCase().includes(term.toLowerCase())
       );
+    },
+    async update() {
+      throw new Error('Method not implemented.');
     },
   };
 
