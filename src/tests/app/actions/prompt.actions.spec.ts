@@ -9,6 +9,8 @@ jest.mock('@/lib/prisma', () => ({ prisma: {} }));
 
 const mockedSearchExecute = jest.fn();
 const mockedCreateExecute = jest.fn();
+const mockedUpdateExecute = jest.fn();
+const mockedDeleteExecute = jest.fn();
 
 jest.mock('@/core/application/prompts/search-prompts.use-case', () => ({
   SearchPromptsUseCase: jest
@@ -22,15 +24,11 @@ jest.mock('@/core/application/prompts/create-prompt.use-case', () => ({
     .mockImplementation(() => ({ execute: mockedCreateExecute })),
 }));
 
-const mockedDeleteExecute = jest.fn();
-
 jest.mock('@/core/application/prompts/delete-prompt.use-case', () => ({
   DeletePromptUseCase: jest
     .fn()
     .mockImplementation(() => ({ execute: mockedDeleteExecute })),
 }));
-
-const mockedUpdateExecute = jest.fn();
 
 jest.mock('@/core/application/prompts/update-prompt.use-case', () => ({
   UpdatePromptUseCase: jest
@@ -168,7 +166,7 @@ describe('Server Actions: Prompts', () => {
       });
     });
 
-    it('deve retornar erro de validação quando o id for vazio', async () => {
+    it('deve retornar erro quando o id for vazio', async () => {
       const promptId = '';
 
       const result = await deletePromptAction(promptId);
@@ -178,7 +176,8 @@ describe('Server Actions: Prompts', () => {
     });
 
     it('deve retornar erro quando o prompt não existir', async () => {
-      mockedDeleteExecute.mockRejectedValue(new Error('PROMPT_NOT_FOUND'));
+      const errorMessage = 'PROMPT_NOT_FOUND';
+      mockedDeleteExecute.mockRejectedValue(new Error(errorMessage));
       const promptId = '1';
 
       const result = await deletePromptAction(promptId);
@@ -187,7 +186,7 @@ describe('Server Actions: Prompts', () => {
       expect(result.message).toBe('Prompt não encontrado');
     });
 
-    it('deve retornar erro genérico quando falhar ao remover', async () => {
+    it('deve retornar erro genérico quando a action falhar', async () => {
       mockedDeleteExecute.mockRejectedValue(new Error('UNKNOWN'));
       const promptId = '1';
 
