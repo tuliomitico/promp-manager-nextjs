@@ -8,6 +8,7 @@ import {
   type ChangeEvent,
   useEffect,
 } from 'react';
+import { motion } from 'motion/react';
 import {
   ArrowLeftToLine,
   Plus as AddIcon,
@@ -28,6 +29,9 @@ import { searchPromptAction } from '@/app/actions/prompt.actions';
 export type SidebarContentProps = {
   prompts: PromptSummary[];
 };
+
+const initialMotion = { opacity: 0 };
+const fadeTransition = { duration: 0.2, delay: 0.1 };
 
 export function SidebarContent({ prompts }: SidebarContentProps) {
   const router = useRouter();
@@ -95,10 +99,12 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
       >
         <Menu className="size-5 text-gray-100" />
       </Button>
-      <aside
+      <motion.aside
         className={`border-r border-gray-700 flex flex-col h-full bg-gray-800 
                     transition-[transform,width] duration-300 ease-in-out fixed 
                     md:relative left-0 top-0 z-50 md:z-auto w-[80vw] sm:w-[320px] ${isCollapsed ? 'md:w-[72px]' : 'md:w-[384px]'} ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        initial={false}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         {isCollapsed && (
           <section className="px-2 py-6">
@@ -113,7 +119,12 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                 <ArrowRightToLine className="w-5 h-5 text-gray-100" />
               </Button>
             </header>
-            <div className="flex flex-col items-center space-y-4">
+            <motion.div
+              className="flex flex-col items-center space-y-4"
+              initial={initialMotion}
+              animate={{ opacity: 1 }}
+              transition={fadeTransition}
+            >
               <Button
                 onClick={handleNewPrompt}
                 aria-label="Novo prompt"
@@ -121,7 +132,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
               >
                 <AddIcon className="w-5 h-5 text-white" />
               </Button>
-            </div>
+            </motion.div>
           </section>
         )}
         {!isCollapsed && (
@@ -139,7 +150,12 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                   </Button>
                 </div>
               </div>
-              <div className="flex w-full items-center justify-between mb-6">
+              <motion.div
+                className="flex w-full items-center justify-between mb-6"
+                initial={initialMotion}
+                animate={{ opacity: 1 }}
+                transition={fadeTransition}
+              >
                 <header className="flex w-full items-center justify-between">
                   <Logo />
                   <Button
@@ -152,7 +168,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                     <ArrowLeftToLine className="w-5 h-5 text-gray-100" />
                   </Button>
                 </header>
-              </div>
+              </motion.div>
               <section className="mb-5">
                 <form
                   ref={formRef}
@@ -178,22 +194,31 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                   )}
                 </form>
               </section>
-              <div>
+              <motion.div
+                initial={initialMotion}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={fadeTransition}
+              >
                 <Button onClick={handleNewPrompt} className="w-full" size="lg">
                   <AddIcon className="size-5 mr-2" />
                   Novo prompt
                 </Button>
-              </div>
+              </motion.div>
             </section>
-            <nav
+            <motion.nav
               className="flex-1 overflow-auto px-6 pb-6"
               aria-label="Lista de prompts"
+              initial={initialMotion}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={fadeTransition}
             >
               <PromptList prompts={promptList} />
-            </nav>
+            </motion.nav>
           </>
         )}
-      </aside>
+      </motion.aside>
     </>
   );
 }

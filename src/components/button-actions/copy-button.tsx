@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Button } from '../ui/button';
 import { Check, Copy } from 'lucide-react';
 import { toast } from 'sonner';
@@ -55,7 +56,15 @@ export function CopyButton({ content }: CopyButtonProps) {
       ) : (
         <Copy className="size-4" />
       )}
-      <span>{isCopied ? 'Copiado' : 'Copiar'}</span>
+      <motion.span
+        initial={{ opacity: 0, y: 2 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -2 }}
+        transition={{ duration: 0.2 }}
+        key={isCopied ? 'copiado' : 'copiar'}
+      >
+        {isCopied ? 'Copiado' : 'Copiar'}
+      </motion.span>
     </Button>
   );
 }
