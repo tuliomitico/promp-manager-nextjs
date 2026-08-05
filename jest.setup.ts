@@ -9,4 +9,10 @@ if (!(globalThis as any).crypto) {
   (globalThis as any).crypto = webcrypto;
 }
 
+const refreshMock = jest.fn();
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: refreshMock }),
+}));
+
 expect.extend({});

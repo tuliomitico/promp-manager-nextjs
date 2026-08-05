@@ -30,7 +30,6 @@ export type SidebarContentProps = {
   prompts: PromptSummary[];
 };
 
-const initialMotion = { opacity: 0 };
 const fadeTransition = { duration: 0.2, delay: 0.1 };
 
 export function SidebarContent({ prompts }: SidebarContentProps) {
@@ -112,7 +111,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
               <Button
                 onClick={expandedSidebar}
                 variant="icon"
-                className="hidden md:inline-flex p-2 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 rounded-lg transition-colors"
+                className="md:inline-flex p-2 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 rounded-lg transition-colors"
                 aria-label="Expandir sidebar"
                 title="Expandir sidebar"
               >
@@ -121,7 +120,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
             </header>
             <motion.div
               className="flex flex-col items-center space-y-4"
-              initial={initialMotion}
+              initial={false}
               animate={{ opacity: 1 }}
               transition={fadeTransition}
             >
@@ -135,6 +134,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
             </motion.div>
           </section>
         )}
+
         {!isCollapsed && (
           <>
             <section className="p-6">
@@ -152,7 +152,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
               </div>
               <motion.div
                 className="flex w-full items-center justify-between mb-6"
-                initial={initialMotion}
+                initial={false}
                 animate={{ opacity: 1 }}
                 transition={fadeTransition}
               >
@@ -161,7 +161,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                   <Button
                     onClick={collapsedSidebar}
                     variant="icon"
-                    className="hidden md:inline-flex p-2 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 rounded-lg transition-colors"
+                    className="md:inline-flex p-2 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-500 rounded-lg transition-colors"
                     title="Minimizar sidebar"
                     aria-label="Minimizar sidebar"
                   >
@@ -195,7 +195,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
                 </form>
               </section>
               <motion.div
-                initial={initialMotion}
+                initial={false}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={fadeTransition}
@@ -209,7 +209,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
             <motion.nav
               className="flex-1 overflow-auto px-6 pb-6"
               aria-label="Lista de prompts"
-              initial={initialMotion}
+              initial={false}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={fadeTransition}
