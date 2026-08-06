@@ -24,7 +24,7 @@ type PromptDelegateMock = {
   >;
   findMany: jest.MockedFunction<
     (args: {
-      orderBy?: { createdAt: 'desc' | 'asc' };
+      orderBy?: { createdAt: 'asc' | 'desc' };
       where?: {
         OR: Array<{
           title?: { contains: string; mode: 'insensitive' };
@@ -42,12 +42,12 @@ type PrismaMock = {
 function createMockPrisma() {
   const mock: PrismaMock = {
     prompt: {
-      findMany: jest.fn(),
-      findFirst: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
       findUnique: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
     },
   };
 
@@ -64,7 +64,7 @@ describe('PrismaPromptRepository', () => {
   });
 
   describe('create', () => {
-    it('deve chamar o metodo create com os dados corretos', async () => {
+    it('deve chamar o método create com os dados corretos', async () => {
       const input = {
         title: 'title',
         content: 'content',
@@ -72,7 +72,9 @@ describe('PrismaPromptRepository', () => {
 
       await repository.create(input);
 
-      expect(prisma.prompt.create).toHaveBeenCalledWith({ data: input });
+      expect(prisma.prompt.create).toHaveBeenCalledWith({
+        data: input,
+      });
     });
   });
 
@@ -94,17 +96,18 @@ describe('PrismaPromptRepository', () => {
       });
 
       expect(prisma.prompt.update).toHaveBeenCalledWith({
-        where: { id: input.id },
+        where: {
+          id: input.id,
+        },
         data: {
           title: input.title,
           content: input.content,
         },
       });
-
       expect(result).toEqual(input);
     });
 
-    it('deve enviar apenas campos presentes (somente title)', async () => {
+    it('deve enviar apenas campos presentes (ex: somente title)', async () => {
       const now = new Date();
       const input = {
         id: '1',
@@ -120,14 +123,12 @@ describe('PrismaPromptRepository', () => {
       });
       const call = prisma.prompt.update.mock.calls[0][0];
 
-      expect(call.where).toEqual({
-        id: input.id,
-      });
+      expect(call.where).toEqual({ id: input.id });
       expect(call.data).toEqual({ title: input.title });
       expect('content' in call.data).toBe(false);
     });
 
-    it('deve enviar apenas campos presentes (somente content)', async () => {
+    it('deve enviar apenas campos presentes (ex: somente content)', async () => {
       const now = new Date();
       const input = {
         id: '1',
@@ -143,20 +144,21 @@ describe('PrismaPromptRepository', () => {
       });
       const call = prisma.prompt.update.mock.calls[0][0];
 
-      expect(call.where).toEqual({
-        id: input.id,
-      });
+      expect(call.where).toEqual({ id: input.id });
       expect(call.data).toEqual({ content: input.content });
       expect('title' in call.data).toBe(false);
     });
   });
 
   describe('delete', () => {
-    it('deve chamar prisma.propmpt.delete com where id', async () => {
-      await repository.delete('1');
+    it('deve chamar prisma.prompt.delete com where id', async () => {
+      const promptId = '1';
+      await repository.delete(promptId);
 
       expect(prisma.prompt.delete).toHaveBeenCalledWith({
-        where: { id: '1' },
+        where: {
+          id: promptId,
+        },
       });
     });
   });
@@ -169,16 +171,16 @@ describe('PrismaPromptRepository', () => {
         title,
         content: 'content 01',
       };
-
       prisma.prompt.findFirst.mockResolvedValue(input);
 
-      const results = await repository.findByTitle(title);
+      const result = await repository.findByTitle(title);
 
       expect(prisma.prompt.findFirst).toHaveBeenCalledWith({
-        where: { title },
+        where: {
+          title,
+        },
       });
-
-      expect(results).toEqual(input);
+      expect(result).toEqual(input);
     });
   });
 
@@ -192,13 +194,14 @@ describe('PrismaPromptRepository', () => {
         createdAt: now,
         updatedAt: now,
       };
-
       prisma.prompt.findUnique.mockResolvedValue(input);
 
       const result = await repository.findById(input.id);
 
       expect(prisma.prompt.findUnique).toHaveBeenCalledWith({
-        where: { id: input.id },
+        where: {
+          id: input.id,
+        },
       });
       expect(result).toEqual(input);
     });
@@ -231,7 +234,6 @@ describe('PrismaPromptRepository', () => {
           updatedAt: now,
         },
       ];
-
       prisma.prompt.findMany.mockResolvedValue(input);
 
       const results = await repository.findMany();
@@ -239,7 +241,6 @@ describe('PrismaPromptRepository', () => {
       expect(prisma.prompt.findMany).toHaveBeenCalledWith({
         orderBy: { createdAt: 'desc' },
       });
-
       expect(results).toMatchObject(input);
     });
   });
@@ -256,7 +257,6 @@ describe('PrismaPromptRepository', () => {
           updatedAt: now,
         },
       ];
-
       prisma.prompt.findMany.mockResolvedValue(input);
 
       const results = await repository.searchMany('    ');
@@ -265,11 +265,10 @@ describe('PrismaPromptRepository', () => {
         where: undefined,
         orderBy: { createdAt: 'desc' },
       });
-
       expect(results).toMatchObject(input);
     });
 
-    it('deve buscar o termo e popular OR no where', async () => {
+    it('deve buscar por termo e popular OR no where', async () => {
       const now = new Date();
       const input = [
         {
@@ -280,7 +279,6 @@ describe('PrismaPromptRepository', () => {
           updatedAt: now,
         },
       ];
-
       prisma.prompt.findMany.mockResolvedValue(input);
 
       const results = await repository.searchMany('  title 01  ');
@@ -288,17 +286,34 @@ describe('PrismaPromptRepository', () => {
       expect(prisma.prompt.findMany).toHaveBeenCalledWith({
         where: {
           OR: [
-            {
-              title: { contains: 'title 01', mode: 'insensitive' },
-            },
-            {
-              content: { contains: 'title 01', mode: 'insensitive' },
-            },
+            { title: { contains: 'title 01', mode: 'insensitive' } },
+            { content: { contains: 'title 01', mode: 'insensitive' } },
           ],
         },
         orderBy: { createdAt: 'desc' },
       });
+      expect(results).toMatchObject(input);
+    });
 
+    it('deve aceitar termo undefined e não enviar o where', async () => {
+      const now = new Date();
+      const input = [
+        {
+          id: '1',
+          title: 'Title 01',
+          content: 'Content 01',
+          createdAt: now,
+          updatedAt: now,
+        },
+      ];
+      prisma.prompt.findMany.mockResolvedValue(input);
+
+      const results = await repository.searchMany(undefined);
+
+      expect(prisma.prompt.findMany).toHaveBeenCalledWith({
+        where: undefined,
+        orderBy: { createdAt: 'desc' },
+      });
       expect(results).toMatchObject(input);
     });
   });
