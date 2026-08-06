@@ -20,16 +20,7 @@ describe('SearchPromptsUseCase', () => {
     },
   ];
 
-  const repository: PromptRepository = {
-    async create() {
-      throw new Error('Method not implemented.');
-    },
-    async findById() {
-      throw new Error('Method not implemented.');
-    },
-    async findByTitle() {
-      throw new Error('Method not implemented.');
-    },
+  const repository = {
     async findMany(): Promise<Prompt[]> {
       return input;
     },
@@ -40,10 +31,7 @@ describe('SearchPromptsUseCase', () => {
           prompt.content.toLowerCase().includes(term.toLowerCase())
       );
     },
-    async update() {
-      throw new Error('Method not implemented.');
-    },
-  };
+  } as PromptRepository;
 
   it('deve retornar todos os prompts quando o termo for vazio', async () => {
     const useCase = new SearchPromptsUseCase(repository);

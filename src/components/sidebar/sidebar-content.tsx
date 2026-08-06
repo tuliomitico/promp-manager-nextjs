@@ -1,30 +1,32 @@
 'use client';
 
 import {
-  startTransition,
-  useActionState,
-  useState,
-  useRef,
-  type ChangeEvent,
-  useEffect,
-} from 'react';
-import { motion } from 'motion/react';
-import {
-  ArrowLeftToLine,
   Plus as AddIcon,
-  X as CloseButton,
+  ArrowLeftToLine,
   ArrowRightToLine,
+  X as CloseButton,
   Menu,
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { motion } from 'motion/react';
+import { useRouter } from 'next/navigation';
+import { useQueryState } from 'nuqs';
+import {
+  startTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from 'react';
 
-import { Button } from '../ui/button';
-import { Logo } from '../logo';
-import { Input } from '../ui/input';
-import { PromptSummary } from '@/core/domain/prompts/prompt.entity';
-import { PromptList } from '../prompts';
-import { Spinner } from '../ui/spinner';
 import { searchPromptAction } from '@/app/actions/prompt.actions';
+import { PromptSummary } from '@/core/domain/prompts/prompt.entity';
+
+import { Logo } from '../logo';
+import { PromptList } from '../prompts';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Spinner } from '../ui/spinner';
 
 export type SidebarContentProps = {
   prompts: PromptSummary[];
@@ -34,7 +36,6 @@ const fadeTransition = { duration: 0.2, delay: 0.1 };
 
 export function SidebarContent({ prompts }: SidebarContentProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -45,7 +46,7 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const [query, setQuery] = useQueryState('q', { defaultValue: '' });
 
   const hasQuery = query.trim().length > 0;
   const promptList = hasQuery ? (searchState.prompts ?? prompts) : prompts;
@@ -75,8 +76,6 @@ export function SidebarContent({ prompts }: SidebarContentProps) {
     setQuery(newQuery);
 
     startTransition(() => {
-      const url = newQuery ? `/?q=${encodeURIComponent(newQuery)}` : '/';
-      router.push(url, { scroll: false });
       formRef.current?.requestSubmit();
     });
   }
